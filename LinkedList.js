@@ -62,7 +62,6 @@ class LinkedList {
     }
   }
   at(index) {
-    // returns the node at the given index
     let i = 0;
     let currentNode = this.headNode;
     while (i < index) {
@@ -118,7 +117,6 @@ class LinkedList {
     }
   }
   toString() {
-    // The format should be: ( value ) -> ( value ) -> ( value ) -> null
     let str = '';
     let currentNode = this.headNode;
     const tail = this.tail();
@@ -135,10 +133,66 @@ class LinkedList {
       currentNode = currentNode.nextNode;
     }
   }
+  insertAt(value, index) {
+    if (index === 0) {
+      this.prependValue(value);
+      return;
+    }
+    let i = 0;
+    let currentNode = this.headNode;
+    while (i < index) {
+      if (i === index - 1) {
+        // add node with pointer to next node
+        const node = new Node(value, currentNode.nextNode);
+        this.list = {
+          ...this.list,
+          [this.id]: node,
+        };
+        this.id++;
+        // change current node pointer to newly added node
+        currentNode.nextNode = node;
+        return;
+      } else {
+        currentNode = currentNode.nextNode;
+        i++;
+      }
+    }
+  }
+  removeAt(index) {
+    if (index === 0) {
+      const pointer = this.headNode.nextNode;
+      for (const prop in this.list) {
+        if (this.list[prop] === this.headNode) {
+          // make second node new head node
+          this.headNode = pointer;
+          // delete head node
+          delete this.list[prop];
+          return;
+        }
+      }
+    }
+    let i = 0;
+    let currentNode = this.headNode;
+    while (i < index) {
+      let pointer = currentNode.nextNode;
+      if (i === index - 1) {
+        // assign previous pointer to next nodes pointer
+        currentNode.nextNode = pointer.nextNode;
+        // delete next node
+        for (const prop in this.list) {
+          if (this.list[prop] === pointer) {
+            delete this.list[prop];
+          }
+        }
+        return;
+      }
+      currentNode = pointer;
+      i++;
+    }
+  }
 }
 
 class Node {
-  //contains value function and a link to the nextNode, both set as null by default
   constructor(value, nextNode) {
     this.value = value ?? null;
     this.nextNode = nextNode ?? null;
@@ -153,19 +207,11 @@ myList.appendValue(69);
 myList.appendValue(420);
 myList.prependValue('hot dog');
 myList.prependValue('baby yoda');
-myList.pop()
-console.log(myList);
-// LinkedList {
-//   headNode: Node {
-//     value: 'baby yoda',
-//     nextNode: Node { value: 'hot dog', nextNode: [Node] }
-//   },
-//   id: 6,
-//   list: {
-//     '0': Node { value: [Object], nextNode: [Node] },
-//     '1': Node { value: [Array], nextNode: [Node] },
-//     '2': Node { value: 69, nextNode: null },
-//     '4': Node { value: 'hot dog', nextNode: [Node] },
-//     '5': Node { value: 'baby yoda', nextNode: [Node] }
-//   }
-// }
+console.log(myList.toString());
+// ( baby yoda ) -> ( hot dog ) -> ( {"x":"y","a":"b"} ) -> ( ["hank","bobby","peggy"] ) -> ( 69 ) -> ( 420 ) -> null
+myList.insertAt('inserted', 3);
+console.log(myList.toString());
+// ( baby yoda ) -> ( hot dog ) -> ( {"x":"y","a":"b"} ) -> ( inserted ) -> ( ["hank","bobby","peggy"] ) -> ( 69 ) -> ( 420 ) -> null
+myList.removeAt(0);
+console.log(myList.toString());
+// ( hot dog ) -> ( {"x":"y","a":"b"} ) -> ( inserted ) -> ( ["hank","bobby","peggy"] ) -> ( 69 ) -> ( 420 ) -> null
