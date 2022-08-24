@@ -52,7 +52,6 @@ class LinkedList {
     return this.headNode;
   }
   tail() {
-    // returns the last node in the list
     let currentNode = this.headNode;
     while (currentNode) {
       const pointer = currentNode.nextNode;
@@ -64,19 +63,77 @@ class LinkedList {
   }
   at(index) {
     // returns the node at the given index
+    let i = 0;
+    let currentNode = this.headNode;
+    while (i < index) {
+      currentNode = currentNode.nextNode;
+      i++;
+    }
+    return currentNode;
   }
   pop() {
-    // removes the last element in the list
+    let currentNode = this.headNode;
+    while (currentNode) {
+      let pointer = currentNode.nextNode;
+      if (pointer.nextNode === null) {
+        // delete last object from list
+        for (const prop in this.list) {
+          if (this.list[prop].value === pointer.value) {
+            delete this.list[prop];
+          }
+        }
+        // delete pointer on second to last object
+        currentNode.nextNode = null;
+        return;
+      }
+      currentNode = pointer;
+    }
   }
   contains(value) {
-    // returns true if the passid value is in the list and otherwise returns false
+    let currentNode = this.headNode;
+    const tail = this.tail();
+    while (true) {
+      if (currentNode.value === value) {
+        return true;
+      }
+      if (currentNode == tail) {
+        return false;
+      }
+      currentNode = currentNode.nextNode;
+    }
   }
   find(value) {
-    //  returns the index of the node containing value, or null if not found.
+    let currentNode = this.headNode;
+    const tail = this.tail();
+    let i = 0;
+    while (true) {
+      if (currentNode.value === value) {
+        return i;
+      }
+      if (currentNode == tail) {
+        return null;
+      }
+      currentNode = currentNode.nextNode;
+      i++;
+    }
   }
   toString() {
-    // represents your LinkedList objects as strings, so you can print them out and preview them in the console.
     // The format should be: ( value ) -> ( value ) -> ( value ) -> null
+    let str = '';
+    let currentNode = this.headNode;
+    const tail = this.tail();
+    while (true) {
+      let value = currentNode.value;
+      if (typeof value === 'object') {
+        value = JSON.stringify(value);
+      }
+      if (currentNode == tail) {
+        str += `( ${value} ) -> ${null}`;
+        return str;
+      }
+      str += `( ${value} ) -> `;
+      currentNode = currentNode.nextNode;
+    }
   }
 }
 
@@ -90,10 +147,25 @@ class Node {
 
 const myList = new LinkedList();
 
-myList.appendValue('bob');
+myList.appendValue({ x: 'y', a: 'b' });
+myList.appendValue(['hank', 'bobby', 'peggy']);
 myList.appendValue(69);
 myList.appendValue(420);
 myList.prependValue('hot dog');
 myList.prependValue('baby yoda');
-
-console.log(myList.tail());
+myList.pop()
+console.log(myList);
+// LinkedList {
+//   headNode: Node {
+//     value: 'baby yoda',
+//     nextNode: Node { value: 'hot dog', nextNode: [Node] }
+//   },
+//   id: 6,
+//   list: {
+//     '0': Node { value: [Object], nextNode: [Node] },
+//     '1': Node { value: [Array], nextNode: [Node] },
+//     '2': Node { value: 69, nextNode: null },
+//     '4': Node { value: 'hot dog', nextNode: [Node] },
+//     '5': Node { value: 'baby yoda', nextNode: [Node] }
+//   }
+// }
